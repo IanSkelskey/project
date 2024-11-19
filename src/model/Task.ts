@@ -8,8 +8,10 @@ export interface Task {
     title: string;
     description: string;
     statusId: DocumentReference<Status>;
-    boardId: DocumentReference<Project>;
+    projectId: DocumentReference<Project>;
     assignedTo?: DocumentReference<User>;
     createdAt: Timestamp;
     updatedAt: Timestamp;
+    blockingTasks?: DocumentReference<Task>[];
+    blockedByTasks?: DocumentReference<Task>[];
 }
