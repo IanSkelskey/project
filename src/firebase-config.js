@@ -34,7 +34,7 @@ export async function signInWithGoogle(setUserState) {
             setUserState({ user, isNewUser: false });
         }
     } catch (error) {
-        console.error("Error during sign-in:", error);
+        console.error('Error during sign-in:', error);
     }
 }
 
