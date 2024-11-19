@@ -1,49 +1,38 @@
 // src/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { auth, provider, signInWithPopup } from './firebase-config';
 import './App.css';
-import { Container, Typography, Button, Box } from '@mui/material'; // Import additional Material-UI components
+import LoginScreen from './components/Login';
+import MainScreen from './components/Main';
 
 const App: React.FC = () => {
+    const [loggedIn, setLoggedIn] = useState(false);
+
     const handleSignIn = async () => {
         try {
             const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            console.log('User signed in:', user.displayName, user.email);
+            console.log('User signed in:', result.user?.displayName, result.user?.email);
+            setLoggedIn(true);
         } catch (error) {
             console.error('Error signing in with Google:', error);
         }
     };
 
-    return (
-        <Container 
-            maxWidth="sm" // Limits the width to small size for a compact design
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh',
-                textAlign: 'center',
-            }}
-        >
-            <Box mb={3}>
-                <Typography variant="h3" component="h1" gutterBottom>
-                    Welcome to Project Manager
-                </Typography>
-                <Typography variant="h6" color="textSecondary" gutterBottom>
-                    Organize your projects, manage tasks, and boost productivity.
-                </Typography>
-            </Box>
-            <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={handleSignIn} 
-                size="large"
-            >
-                Sign in with Google
-            </Button>
-        </Container>
+    const handleLogout = () => {
+        auth.signOut()
+            .then(() => {
+                setLoggedIn(false);
+                console.log('User signed out');
+            })
+            .catch((error) => {
+                console.error('Error signing out:', error);
+            });
+    };
+
+    return loggedIn ? (
+        <MainScreen onLogout={handleLogout} />
+    ) : (
+        <LoginScreen onSignIn={handleSignIn} />
     );
 };
 
