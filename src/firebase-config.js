@@ -26,7 +26,7 @@ export async function signInWithGoogle(setUserState) {
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
-        
+
         // Check if user exists in Firestore
         const userDoc = doc(db, 'User', user.id);
         const userSnapshot = await getDoc(userDoc);
@@ -39,7 +39,7 @@ export async function signInWithGoogle(setUserState) {
             setUserState({ user, isNewUser: false });
         }
     } catch (error) {
-        console.error("Error during sign-in:", error);
+        console.error('Error during sign-in:', error);
     }
 }
 
