@@ -15,7 +15,7 @@ export const createUser = async (userData: any) => {
         });
         return userRef.id; // Returns the generated ID
     } catch (error) {
-        console.error("Error adding user to Firestore:", error);
+        console.error('Error adding user to Firestore:', error);
         throw error;
     }
 };
@@ -42,21 +42,21 @@ export const checkUserExists = async (email: string) => {
     } else {
         return false;
     }
-}
+};
 
 export async function getUserProjects(email: string): Promise<Project[]> {
     const projectsRef = collection(db, 'projects');
     const q = query(projectsRef, where('email', '==', email));
     const querySnapshot = await getDocs(q);
 
-    const projects = querySnapshot.docs.map(doc => {
+    const projects = querySnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
             id: doc.id,
             name: data.name,
             ownerId: data.ownerId,
             createdAt: data.createdAt.toDate(),
-            tasks: data.tasks
+            tasks: data.tasks,
         } as Project;
     });
     return projects;

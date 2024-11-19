@@ -26,7 +26,7 @@ export async function signInWithGoogle(setUserState) {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        if (!await checkUserExists(user.email)) {
+        if (!(await checkUserExists(user.email))) {
             // If the user does not exist, start onboarding
             setUserState({ user, isNewUser: true });
         } else {
