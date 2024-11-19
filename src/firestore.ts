@@ -1,8 +1,7 @@
 // src/firestore.ts
 import { getFirestore, collection, addDoc, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
 import { Project } from './model/Project';
-
-const db = getFirestore();
+import { db } from './firebase-config';
 
 // Function to create a new user with Google data and a unique ID
 export const createUser = async (userData: any) => {

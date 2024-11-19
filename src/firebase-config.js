@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import { checkUserExists } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -20,6 +21,7 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
+const db = getFirestore();
 
 export async function signInWithGoogle(setUserState) {
     try {
@@ -38,4 +40,4 @@ export async function signInWithGoogle(setUserState) {
     }
 }
 
-export { auth, provider };
+export { auth, provider, db };
