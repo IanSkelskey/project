@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase-config';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Container, Typography, Button } from '@mui/material';
 import { User } from '../model/User';
 import { Project } from '../model/Project';
+import { getUserProjects } from '../firestore';
 
 interface DashboardProps {
     user: User;
@@ -14,16 +13,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     const [projects, setProjects] = useState<Project[]>([]);
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            const projectsRef = collection(db, 'projects');
-            const q = query(projectsRef, where('ownerId', '==', user.id));
-            const querySnapshot = await getDocs(q);
-
-            // Map docs data to Project[]
-            setProjects(querySnapshot.docs.map(doc => doc.data() as Project));
-        };
-
-        fetchProjects();
+        getUserProjects(user.email).then((projects) => {
+            setProjects(projects);
+        });
     }, [user]);
 
     return (
