@@ -4,7 +4,7 @@ import { Status } from './Status';
 import { User } from './User';
 
 export interface Task {
-    taskId: string;
+    id: string;
     title: string;
     description: string;
     statusId: DocumentReference<Status>;

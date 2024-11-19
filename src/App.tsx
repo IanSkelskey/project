@@ -1,39 +1,34 @@
-// src/App.tsx
 import React, { useState } from 'react';
-import { auth, provider, signInWithPopup } from './firebase-config';
-import './App.css';
+import { signInWithGoogle } from './firebase-config';
 import LoginScreen from './components/Login';
-import MainScreen from './components/Main';
+import OnboardingScreen from './components/Onboarding';
+import Dashboard from './components/Dashboard';
+import { User } from './model/User'; // Assuming User is your user model
 
-const App: React.FC = () => {
-    const [loggedIn, setLoggedIn] = useState(false);
+// Define the type for userState
+interface UserState {
+    isNewUser: boolean;
+    user: User;
+}
+
+function App() {
+    // Use the UserState type and initialize as null
+    const [userState, setUserState] = useState<UserState | null>(null);
 
     const handleSignIn = async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            console.log('User signed in:', result.user?.displayName, result.user?.email);
-            setLoggedIn(true);
-        } catch (error) {
-            console.error('Error signing in with Google:', error);
-        }
+        await signInWithGoogle(setUserState);
     };
 
-    const handleLogout = () => {
-        auth.signOut()
-            .then(() => {
-                setLoggedIn(false);
-                console.log('User signed out');
-            })
-            .catch((error) => {
-                console.error('Error signing out:', error);
-            });
-    };
+    if (!userState) {
+        return <LoginScreen onSignIn={handleSignIn} />;
+    }
 
-    return loggedIn ? (
-        <MainScreen onLogout={handleLogout} />
+    // Access userState properties without TypeScript errors
+    return userState.isNewUser ? (
+        <OnboardingScreen user={userState.user} />
     ) : (
-        <LoginScreen onSignIn={handleSignIn} />
+        <Dashboard user={userState.user} />
     );
-};
+}
 
 export default App;

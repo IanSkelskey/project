@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,9 +17,30 @@ const firebaseConfig = {
     measurementId: 'G-H0RYR7CHPL',
 };
 
-// Initialize Firebase
 initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
+const db = getFirestore();
 
-export { auth, provider, signInWithPopup };
+export async function signInWithGoogle(setUserState) {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        // Check if user exists in Firestore
+        const userDoc = doc(db, 'User', user.id);
+        const userSnapshot = await getDoc(userDoc);
+
+        if (!userSnapshot.exists()) {
+            // If the user does not exist, start onboarding
+            setUserState({ user, isNewUser: true });
+        } else {
+            // Existing user, load dashboard data
+            setUserState({ user, isNewUser: false });
+        }
+    } catch (error) {
+        console.error("Error during sign-in:", error);
+    }
+}
+
+export { auth, provider, db };
