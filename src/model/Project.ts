@@ -4,6 +4,6 @@ import { User } from './User';
 export interface Project {
     id: string;
     name: string;
-    ownerId: DocumentReference<User>; // Reference to a user document
+    ownerId: DocumentReference<User>;
     createdAt: Timestamp;
 }
