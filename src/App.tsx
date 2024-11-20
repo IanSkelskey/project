@@ -1,39 +1,42 @@
-// src/App.tsx
+// Updated App.tsx
 import React, { useState } from 'react';
-import { auth, provider, signInWithPopup } from './firebase-config';
-import './App.css';
 import LoginScreen from './components/Login';
-import MainScreen from './components/Main';
+import OnboardingScreen from './components/Onboarding';
+import Dashboard from './components/Dashboard';
+import { User } from './model/User';
+import { signInWithGoogle } from './firebase-config';
 
-const App: React.FC = () => {
-    const [loggedIn, setLoggedIn] = useState(false);
+interface UserState {
+    isNewUser: boolean;
+    user: User;
+}
+
+function App() {
+    const [userState, setUserState] = useState<UserState | null>(null);
+    const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
 
     const handleSignIn = async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            console.log('User signed in:', result.user?.displayName, result.user?.email);
-            setLoggedIn(true);
-        } catch (error) {
-            console.error('Error signing in with Google:', error);
-        }
+        await signInWithGoogle(setUserState);
+    };
+
+    const handleOnboardingComplete = () => {
+        setIsOnboardingComplete(true);
     };
 
     const handleLogout = () => {
-        auth.signOut()
-            .then(() => {
-                setLoggedIn(false);
-                console.log('User signed out');
-            })
-            .catch((error) => {
-                console.error('Error signing out:', error);
-            });
+        setUserState(null); // Clear user state on logout
+        setIsOnboardingComplete(false);
     };
 
-    return loggedIn ? (
-        <MainScreen onLogout={handleLogout} />
+    if (!userState) {
+        return <LoginScreen onSignIn={handleSignIn} />;
+    }
+
+    return userState.isNewUser && !isOnboardingComplete ? (
+        <OnboardingScreen user={userState.user} onComplete={handleOnboardingComplete} />
     ) : (
-        <LoginScreen onSignIn={handleSignIn} />
+        <Dashboard user={userState.user} onLogout={handleLogout} />
     );
-};
+}
 
 export default App;
