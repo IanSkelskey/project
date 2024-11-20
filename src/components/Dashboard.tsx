@@ -1,17 +1,20 @@
-// Updated Dashboard.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Card, CardContent, CardActions } from '@mui/material';
+import { Timestamp } from 'firebase/firestore';
 import { User } from '../model/User';
 import { Project } from '../model/Project';
 import { getUserProjects } from '../firestore';
+import ProjectCreationForm from './ProjectCreationForm';
 
 interface DashboardProps {
-    user: User | null; // Allow user to be null
+    user: User | null;
     onLogout: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [creatingProject, setCreatingProject] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -21,8 +24,23 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         }
     }, [user]);
 
+    const handleCreateNewProject = () => {
+        setCreatingProject(true);
+    };
+
+    const handleProjectCreation = (projectName: string, description: string) => {
+        if (!user || !user.email) return;
+        const newProject: Project = { id: '', ownerId: user.email, name: projectName, description: description, createdAt: Timestamp.now(), tasks: [] };
+        setProjects([...projects, newProject]);
+        setCreatingProject(false);
+    };
+
+    const handleCancelCreation = () => {
+        setCreatingProject(false);
+    };
+
     if (!user) {
-        return null; // Render nothing if user is null
+        return null;
     }
 
     return (
@@ -33,27 +51,32 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                     Logout
                 </Button>
             </Box>
-            <Box display="flex" flexDirection="column" gap={2}>
-                {projects.length === 0 ? (
-                    <Typography>No projects found. Create your first project!</Typography>
-                ) : (
-                    projects.map((project, index) => (
-                        <Card key={index} variant="outlined">
-                            <CardContent>
-                                <Typography variant="h6">{project.name}</Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button size="small" color="primary">
-                                    Open Project
-                                </Button>
-                            </CardActions>
-                        </Card>
-                    ))
-                )}
-                <Button variant="contained" color="primary" style={{ marginTop: '1rem' }}>
-                    Create New Project
-                </Button>
-            </Box>
+            {creatingProject ? (
+                <ProjectCreationForm onCreate={handleProjectCreation} onCancel={handleCancelCreation} />
+            ) : (
+                <Box display="flex" flexDirection="column" gap={2}>
+                    {projects.length === 0 ? (
+                        <Typography>No projects found. Create your first project!</Typography>
+                    ) : (
+                        projects.map((project: Project, index: number) => (
+                            <Card key={index} variant="outlined">
+                                <CardContent>
+                                    <Typography variant="h6">{project.name}</Typography>
+                                    <Typography>{project.description}</Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button size="small" color="primary">
+                                        Open Project
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        ))
+                    )}
+                    <Button variant="contained" color="primary" style={{ marginTop: '1rem' }} onClick={handleCreateNewProject}>
+                        Create New Project
+                    </Button>
+                </Box>
+            )}
         </Container>
     );
 };

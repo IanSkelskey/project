@@ -5,7 +5,8 @@ import { Task } from './Task';
 export interface Project {
     id: string;
     name: string;
-    ownerId: DocumentReference<User>;
+    description: string;
+    ownerId: string;
     createdAt: Timestamp;
     tasks: DocumentReference<Task>[];
 }
