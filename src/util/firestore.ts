@@ -1,5 +1,18 @@
 // src/firestore.ts
-import { collection, doc, setDoc, query, where, getDocs, getDoc, deleteDoc, addDoc, Timestamp, updateDoc, DocumentReference } from 'firebase/firestore';
+import {
+    collection,
+    doc,
+    setDoc,
+    query,
+    where,
+    getDocs,
+    getDoc,
+    deleteDoc,
+    addDoc,
+    Timestamp,
+    updateDoc,
+    DocumentReference,
+} from 'firebase/firestore';
 import { Project } from '../model/Project';
 import { db } from './firebase';
 import { User } from '../model/User';
@@ -175,4 +188,3 @@ export async function updateStatus(statusId: string, newName: string): Promise<v
         throw error;
     }
 }
-
