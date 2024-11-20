@@ -79,7 +79,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     return (
         <Container maxWidth="md" style={{ marginTop: '2rem' }}>
             {viewingProjectId ? (
-                <ProjectTasksView projectId={viewingProjectId} onBack={handleBackToProjects} />
+                <ProjectTasksView ownerId={user.email} projectId={viewingProjectId} onBack={handleBackToProjects} />
             ) : (
                 <>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>

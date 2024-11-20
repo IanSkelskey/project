@@ -141,6 +141,28 @@ export function getUserRef(email: string): DocumentReference<User> {
     return doc(db, 'users', email) as DocumentReference<User>;
 }
 
+export async function deleteTask(taskId: string): Promise<void> {
+    try {
+        const taskRef = doc(db, 'tasks', taskId);
+        await deleteDoc(taskRef);
+        console.log(`Task with ID: ${taskId} has been deleted.`);
+    } catch (error) {
+        console.error('Error deleting task:', error);
+        throw error;
+    }
+}
+
+export async function deleteStatus(statusId: string): Promise<void> {
+    try {
+        const statusRef = doc(db, 'statuses', statusId);
+        await deleteDoc(statusRef);
+        console.log(`Status with ID: ${statusId} has been deleted.`);
+    } catch (error) {
+        console.error('Error deleting status:', error);
+        throw error;
+    }
+}
+
 export async function createStatus(name: string, projectRef: any): Promise<void> {
     try {
         await addDoc(collection(db, 'statuses'), { name, projectRef });

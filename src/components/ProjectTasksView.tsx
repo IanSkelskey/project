@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react';
 import {
 	Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box, MenuItem, Select, IconButton
 } from '@mui/material';
-import { Edit } from '@mui/icons-material';
+import { Delete, Edit } from '@mui/icons-material';
 import { Task } from '../model/Task';
 import { Status } from '../model/Status';
-import { getProjectTasks, createTask, getProjectStatuses, createStatus, updateStatus, getProjectRef, getStatusRef, getUserRef } from '../util/firestore';
+import { getProjectTasks, createTask, getProjectStatuses, createStatus, updateStatus, getProjectRef, getStatusRef, getUserRef, deleteTask, deleteStatus } from '../util/firestore';
 import { Timestamp } from 'firebase/firestore';
 
 interface ProjectTasksViewProps {
 	projectId: string;
+	ownerId: string;
 	onBack: () => void;
 }
 
-const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }) => {
+const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, ownerId, onBack }) => {
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [statuses, setStatuses] = useState<Status[]>([]);
 	const [openAddTaskDialog, setOpenAddTaskDialog] = useState(false);
@@ -23,6 +24,10 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 	const [selectedStatusId, setSelectedStatusId] = useState<string>('');
 	const [newStatusName, setNewStatusName] = useState('');
 	const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+	const [statusToDelete, setStatusToDelete] = useState<string | null>(null);
+
 
 	useEffect(() => {
 		getProjectTasks(projectId).then(setTasks);
@@ -30,13 +35,15 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 	}, [projectId]);
 
 	const handleAddTask = async () => {
+		const projectRef = getProjectRef(projectId);
+		const ownerRef = getUserRef(ownerId);
 		const newTask: Task = {
 			id: '', // Temporary id, will be replaced by Firestore
 			title: newTaskTitle,
 			description: newTaskDescription,
 			statusId: getStatusRef(selectedStatusId),
-			projectId: getProjectRef(projectId),
-			assignedTo: getUserRef(''), // Assign to no one initially
+			projectId: projectRef,
+			assignedTo: ownerRef,
 			createdAt: Timestamp.now(),
 			updatedAt: Timestamp.now(),
 			blockingTasks: [],
@@ -48,6 +55,15 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 		setNewTaskTitle('');
 		setNewTaskDescription('');
 		setSelectedStatusId('');
+	};
+
+	const handleDeleteTask = async () => {
+		if (taskToDelete) {
+			await deleteTask(taskToDelete);
+			setTasks(tasks.filter((task) => task.id !== taskToDelete));
+			setOpenDeleteDialog(false);
+			setTaskToDelete(null);
+		}
 	};
 
 	const handleAddStatus = async () => {
@@ -71,6 +87,14 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 		setEditingStatusId(statusId);
 		setNewStatusName(currentName);
 		setOpenEditStatusDialog(true);
+	};
+
+	const handleDeleteStatus = async () => {
+		if (statusToDelete) {
+			deleteStatus(statusToDelete);
+			setStatuses(statuses.filter((status) => status.id !== statusToDelete));
+			setStatusToDelete(null);
+		}
 	};
 
 	return (
@@ -107,6 +131,11 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 								<TableCell>{task.assignedTo?.id}</TableCell>
 								<TableCell>{task.createdAt.toDate().toLocaleString()}</TableCell>
 								<TableCell>{task.updatedAt.toDate().toLocaleString()}</TableCell>
+								<TableCell>
+									<IconButton onClick={() => setTaskToDelete(task.id)}>
+										<Delete />
+									</IconButton>
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
@@ -139,6 +168,11 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 									<TableCell>
 										<IconButton onClick={() => openEditStatus(status.id, status.name)}>
 											<Edit />
+										</IconButton>
+									</TableCell>
+									<TableCell>
+										<IconButton onClick={() => setStatusToDelete(status.id)}>
+											<Delete />
 										</IconButton>
 									</TableCell>
 								</TableRow>
@@ -207,6 +241,39 @@ const ProjectTasksView: React.FC<ProjectTasksViewProps> = ({ projectId, onBack }
 					<Button onClick={handleEditStatus} color="primary">Save</Button>
 				</DialogActions>
 			</Dialog>
+
+			{/* Delete Confirmation Dialog */}
+			<Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+				<DialogTitle>Delete Task</DialogTitle>
+				<DialogContent>
+					Are you sure you want to delete this task? This action cannot be undone.
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+						Cancel
+					</Button>
+					<Button onClick={handleDeleteTask} color="secondary">
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+
+			{/* Open Delete Status Dialog */}
+			<Dialog open={statusToDelete !== null} onClose={() => setStatusToDelete(null)}>
+				<DialogTitle>Delete Status</DialogTitle>
+				<DialogContent>
+					Are you sure you want to delete this status? This action cannot be undone.
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setStatusToDelete(null)} color="primary">
+						Cancel
+					</Button>
+					<Button onClick={handleDeleteStatus} color="secondary">
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+
 		</Container>
 	);
 };
