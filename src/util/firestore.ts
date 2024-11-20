@@ -24,6 +24,7 @@ export const createProject = async (projectData: Project) => {
         await setDoc(projectRef, {
             name: projectData.name,
             ownerId: projectData.ownerId,
+            description: projectData.description, // Added description field here
             createdAt: projectData.createdAt,
             tasks: projectData.tasks,
         });
@@ -36,7 +37,8 @@ export const createProject = async (projectData: Project) => {
         console.error('Error adding project to Firestore:', error);
         throw error;
     }
-}
+};
+
 
 export const checkUserExists = async (email: string) => {
     try {
