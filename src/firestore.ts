@@ -1,5 +1,5 @@
 // src/firestore.ts
-import { getFirestore, collection, addDoc, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
 import { Project } from './model/Project';
 import { db } from './firebase-config';
 

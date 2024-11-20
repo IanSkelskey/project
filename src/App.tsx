@@ -1,31 +1,36 @@
+// App.tsx
+
 import React, { useState } from 'react';
-import { signInWithGoogle } from './firebase-config';
 import LoginScreen from './components/Login';
 import OnboardingScreen from './components/Onboarding';
 import Dashboard from './components/Dashboard';
-import { User } from './model/User'; // Assuming User is your user model
+import { User } from './model/User';
+import { signInWithGoogle } from './firebase-config';
 
-// Define the type for userState
 interface UserState {
     isNewUser: boolean;
     user: User;
 }
 
 function App() {
-    // Use the UserState type and initialize as null
     const [userState, setUserState] = useState<UserState | null>(null);
+    const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
 
     const handleSignIn = async () => {
+        // Sign-in logic
         await signInWithGoogle(setUserState);
+    };
+
+    const handleOnboardingComplete = () => {
+        setIsOnboardingComplete(true);
     };
 
     if (!userState) {
         return <LoginScreen onSignIn={handleSignIn} />;
     }
 
-    // Access userState properties without TypeScript errors
-    return userState.isNewUser ? (
-        <OnboardingScreen user={userState.user} />
+    return userState.isNewUser && !isOnboardingComplete ? (
+        <OnboardingScreen user={userState.user} onComplete={handleOnboardingComplete} />
     ) : (
         <Dashboard user={userState.user} />
     );
