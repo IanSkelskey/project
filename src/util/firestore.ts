@@ -3,6 +3,27 @@ import { collection, doc, setDoc, query, where, getDocs, getDoc, deleteDoc } fro
 import { Project } from '../model/Project';
 import { db } from './firebase';
 import { User } from '../model/User';
+import { Task } from '../model/Task';
+
+export async function getProjectTasks(projectId: string): Promise<Task[]> {
+    const tasksRef = collection(db, 'tasks');
+    const q = query(tasksRef, where('projectId', '==', projectId));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            title: data.title,
+            description: data.description,
+            statusId: data.statusId,
+            projectId: data.projectId,
+            assignedTo: data.assignedTo,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+        } as Task;
+    });
+}
 
 export const createUser = async (userData: User) => {
     try {
