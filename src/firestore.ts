@@ -19,18 +19,6 @@ export const createUser = async (userData: any) => {
     }
 };
 
-// Function to update user with display name after onboarding
-export const updateUserDisplayName = async (userId: string, displayName: string) => {
-    try {
-        const userDoc = doc(db, 'users', userId);
-        await setDoc(userDoc, { displayName }, { merge: true });
-        console.log('User display name updated');
-    } catch (error) {
-        console.error("Error updating user's display name:", error);
-        throw error;
-    }
-};
-
 export const checkUserExists = async (email: string) => {
     const usersRef = collection(db, 'users');
     const q = query(usersRef, where('email', '==', email));

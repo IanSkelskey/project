@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import { User } from '../model/User';
+import { createUser } from '../firestore';
 
 interface OnboardingProps {
     user: User;
@@ -13,6 +14,10 @@ const OnboardingScreen: React.FC<OnboardingProps> = ({ user, onComplete }) => {
     const handleConfirm = () => {
         // Here you might update the user object with the displayName
         // and then move to the dashboard or update user data
+        const newUser = { ...user, displayName };
+        createUser(newUser).then(() => {
+            onComplete(); // Navigate to Dashboard component
+        });
         onComplete(); // Navigate to Dashboard component
     };
 

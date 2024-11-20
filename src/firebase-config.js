@@ -40,4 +40,13 @@ export async function signInWithGoogle(setUserState) {
     }
 }
 
+export async function signOut(setUserState) {
+    try {
+        await auth.signOut();
+        setUserState({ user: null, isNewUser: false });
+    } catch (error) {
+        console.error('Error during sign-out:', error);
+    }
+}
+
 export { auth, provider, db };
