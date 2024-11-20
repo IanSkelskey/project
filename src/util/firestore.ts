@@ -39,7 +39,6 @@ export const createProject = async (projectData: Project) => {
     }
 };
 
-
 export const checkUserExists = async (email: string) => {
     try {
         const userRef = doc(db, 'users', email);
