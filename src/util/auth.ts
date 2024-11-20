@@ -1,6 +1,6 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { checkUserExists } from "./firestore";
-import { auth } from "./firebase";
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { checkUserExists } from './firestore';
+import { auth } from './firebase';
 
 const provider = new GoogleAuthProvider();
 
