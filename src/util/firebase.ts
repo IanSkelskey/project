@@ -3,11 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { checkUserExists } from './firestore';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: 'AIzaSyC7V_OpEO0OGdfSAquzxh0ox8DX4IR21Xs',
     authDomain: 'project-1be6c.firebaseapp.com',
@@ -23,16 +19,14 @@ const provider = new GoogleAuthProvider();
 const auth = getAuth();
 const db = getFirestore();
 
-export async function signInWithGoogle(setUserState) {
+export async function signInWithGoogle(setUserState: (state: { user: any; isNewUser: boolean }) => void) {
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        if (!(await checkUserExists(user.email))) {
-            // If the user does not exist, start onboarding
+        if (user.email && !(await checkUserExists(user.email))) {
             setUserState({ user, isNewUser: true });
         } else {
-            // Existing user, load dashboard data
             setUserState({ user, isNewUser: false });
         }
     } catch (error) {
@@ -40,7 +34,7 @@ export async function signInWithGoogle(setUserState) {
     }
 }
 
-export async function signOut(setUserState) {
+export async function signOut(setUserState: (state: { user: any; isNewUser: boolean }) => void) {
     try {
         await auth.signOut();
         setUserState({ user: null, isNewUser: false });
