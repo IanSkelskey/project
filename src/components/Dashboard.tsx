@@ -4,7 +4,7 @@ import { Container, Typography, Button, Box, Card, CardContent, CardActions } fr
 import { Timestamp } from 'firebase/firestore';
 import { User } from '../model/User';
 import { Project } from '../model/Project';
-import { getUserProjects } from '../firestore';
+import { createProject, getUserProjects } from '../util/firestore';
 import ProjectCreationForm from './ProjectCreationForm';
 
 interface DashboardProps {
@@ -22,16 +22,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 setProjects(projects);
             });
         }
-    }, [user]);
+    }, [user, projects]);
 
     const handleCreateNewProject = () => {
         setCreatingProject(true);
     };
 
-    const handleProjectCreation = (projectName: string, description: string) => {
+    const handleProjectCreation = (name: string, description: string) => {
         if (!user || !user.email) return;
-        const newProject: Project = { id: '', ownerId: user.email, name: projectName, description: description, createdAt: Timestamp.now(), tasks: [] };
+        const newProject: Project = { id: '', ownerId: user.email, name: name, description: description, createdAt: Timestamp.now(), tasks: [] };
         setProjects([...projects, newProject]);
+        createProject(newProject);
         setCreatingProject(false);
     };
 

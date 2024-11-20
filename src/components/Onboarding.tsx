@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import { User } from '../model/User';
-import { createUser } from '../firestore';
+import { createUser } from '../util/firestore';
 
 interface OnboardingProps {
     user: User;
