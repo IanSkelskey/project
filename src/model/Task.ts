@@ -9,7 +9,7 @@ export interface Task {
     description: string;
     statusId: DocumentReference<Status>;
     projectId: DocumentReference<Project>;
-    assignedTo?: DocumentReference<User>;
+    assignedTo: DocumentReference<User>;
     createdAt: Timestamp;
     updatedAt: Timestamp;
     blockingTasks?: DocumentReference<Task>[];

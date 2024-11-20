@@ -1,9 +1,29 @@
 // src/firestore.ts
-import { collection, doc, setDoc, query, where, getDocs, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, query, where, getDocs, getDoc, deleteDoc, addDoc, Timestamp, updateDoc, DocumentReference } from 'firebase/firestore';
 import { Project } from '../model/Project';
 import { db } from './firebase';
 import { User } from '../model/User';
 import { Task } from '../model/Task';
+import { Status } from '../model/Status';
+
+export async function createTask(taskData: Task) {
+    try {
+        await addDoc(collection(db, 'tasks'), {
+            title: taskData.title,
+            description: taskData.description,
+            statusId: taskData.statusId,
+            projectId: taskData.projectId,
+            assignedTo: taskData.assignedTo,
+            createdAt: Timestamp.now(),
+            updatedAt: Timestamp.now(),
+            blockingTasks: taskData.blockingTasks || [],
+            blockedByTasks: taskData.blockedByTasks || [],
+        });
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error;
+    }
+}
 
 export async function getProjectTasks(projectId: string): Promise<Task[]> {
     const tasksRef = collection(db, 'tasks');
@@ -108,3 +128,51 @@ export async function getUserProjects(email: string): Promise<Project[]> {
     });
     return projects;
 }
+
+export function getStatusRef(statusId: string): DocumentReference<Status> {
+    return doc(db, 'statuses', statusId) as DocumentReference<Status>;
+}
+
+export function getProjectRef(projectId: string): DocumentReference<Project> {
+    return doc(db, 'projects', projectId) as DocumentReference<Project>;
+}
+
+export function getUserRef(email: string): DocumentReference<User> {
+    return doc(db, 'users', email) as DocumentReference<User>;
+}
+
+export async function createStatus(name: string, projectRef: any): Promise<void> {
+    try {
+        await addDoc(collection(db, 'statuses'), { name, projectRef });
+        console.log(`Status '${name}' created for project '${projectRef.id}'.`);
+    } catch (error) {
+        console.error('Error creating status:', error);
+        throw error;
+    }
+}
+
+export async function getProjectStatuses(projectId: string): Promise<any[]> {
+    const statusesRef = collection(db, 'statuses');
+    const q = query(statusesRef, where('projectRef', '==', doc(db, 'projects', projectId)));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            name: data.name,
+        };
+    });
+}
+
+export async function updateStatus(statusId: string, newName: string): Promise<void> {
+    try {
+        const statusRef = doc(db, 'statuses', statusId);
+        await updateDoc(statusRef, { name: newName });
+        console.log(`Status '${statusId}' updated to '${newName}'.`);
+    } catch (error) {
+        console.error('Error updating status:', error);
+        throw error;
+    }
+}
+
