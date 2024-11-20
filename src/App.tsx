@@ -4,7 +4,7 @@ import LoginScreen from './components/Login';
 import OnboardingScreen from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import { User } from './model/User';
-import { signInWithGoogle } from '../src/util/firebase';
+import { signInWithGoogle } from './util/auth';
 
 interface UserState {
     isNewUser: boolean;
