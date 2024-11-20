@@ -36,7 +36,7 @@ export const createProject = async (projectData: Project) => {
         console.error('Error adding project to Firestore:', error);
         throw error;
     }
-}
+};
 
 export const checkUserExists = async (email: string) => {
     try {
