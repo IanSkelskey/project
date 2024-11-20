@@ -1,18 +1,16 @@
 // src/firestore.ts
-import { collection, addDoc, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, query, where, getDocs, getDoc } from 'firebase/firestore';
 import { Project } from './model/Project';
 import { db } from './firebase-config';
 
-// Function to create a new user with Google data and a unique ID
 export const createUser = async (userData: any) => {
     try {
-        // Add a new user with auto-generated ID and initial data
-        const userRef = await addDoc(collection(db, 'users'), {
-            email: userData.email,
+        const userRef = doc(db, 'users', userData.email);
+        await setDoc(userRef, {
             displayName: userData.displayName || null,
-            // Additional fields can be added here
+            createdAt: new Date(),
         });
-        return userRef.id; // Returns the generated ID
+        return userRef.id;
     } catch (error) {
         console.error('Error adding user to Firestore:', error);
         throw error;
@@ -20,14 +18,13 @@ export const createUser = async (userData: any) => {
 };
 
 export const checkUserExists = async (email: string) => {
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, where('email', '==', email));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.size > 0) {
-        return true;
-    } else {
-        return false;
+    try {
+        const userRef = doc(db, 'users', email);
+        const docSnap = await getDoc(userRef);
+        return docSnap.exists();
+    } catch (error) {
+        console.error('Error checking user in Firestore:', error);
+        throw error;
     }
 };
 
