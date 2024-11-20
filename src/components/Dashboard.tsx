@@ -1,10 +1,11 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Card, CardContent, CardActions } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+    Container, Typography, Button, Box, Card, CardContent, CardActions, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+} from '@mui/material';
 import { Timestamp } from 'firebase/firestore';
 import { User } from '../model/User';
 import { Project } from '../model/Project';
-import { createProject, getUserProjects } from '../util/firestore';
+import { createProject, getUserProjects, deleteProject } from '../util/firestore';
 import ProjectCreationForm from './ProjectCreationForm';
 
 interface DashboardProps {
@@ -15,6 +16,8 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [creatingProject, setCreatingProject] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -22,7 +25,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 setProjects(projects);
             });
         }
-    }, [user, projects]);
+    }, [user]);
 
     const handleCreateNewProject = () => {
         setCreatingProject(true);
@@ -30,14 +33,28 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
     const handleProjectCreation = (name: string, description: string) => {
         if (!user || !user.email) return;
-        const newProject: Project = { id: '', ownerId: user.email, name: name, description: description, createdAt: Timestamp.now(), tasks: [] };
+        const newProject: Project = { id: '', ownerId: user.email, name, description, createdAt: Timestamp.now(), tasks: [] };
         setProjects([...projects, newProject]);
         createProject(newProject);
         setCreatingProject(false);
     };
 
-    const handleCancelCreation = () => {
-        setCreatingProject(false);
+    const handleDeleteProject = async () => {
+        if (selectedProjectId && user && user.email) {
+            await deleteProject(selectedProjectId, user.email);
+            setProjects(projects.filter(project => project.id !== selectedProjectId));
+            setOpenDeleteDialog(false);
+        }
+    };
+
+    const openDeleteConfirmation = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCancelDeletion = () => {
+        setSelectedProjectId(null);
+        setOpenDeleteDialog(false);
     };
 
     if (!user) {
@@ -53,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 </Button>
             </Box>
             {creatingProject ? (
-                <ProjectCreationForm onCreate={handleProjectCreation} onCancel={handleCancelCreation} />
+                <ProjectCreationForm onCreate={handleProjectCreation} onCancel={() => setCreatingProject(false)} />
             ) : (
                 <Box display="flex" flexDirection="column" gap={2}>
                     {projects.length === 0 ? (
@@ -66,8 +83,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                                     <Typography>{project.description}</Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button size="small" color="primary">
-                                        Open Project
+                                    <Button size="small" color="primary">Open Project</Button>
+                                    <Button
+                                        size="small"
+                                        color="secondary"
+                                        onClick={() => openDeleteConfirmation(project.id)}
+                                    >
+                                        Delete
                                     </Button>
                                 </CardActions>
                             </Card>
@@ -78,6 +100,20 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                     </Button>
                 </Box>
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={openDeleteDialog} onClose={handleCancelDeletion}>
+                <DialogTitle>Delete Project</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this project? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDeletion} color="primary">Cancel</Button>
+                    <Button onClick={handleDeleteProject} color="secondary">Delete</Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

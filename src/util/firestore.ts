@@ -1,5 +1,5 @@
 // src/firestore.ts
-import { collection, doc, setDoc, query, where, getDocs, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, query, where, getDocs, getDoc, deleteDoc } from 'firebase/firestore';
 import { Project } from '../model/Project';
 import { db } from './firebase';
 import { User } from '../model/User';
@@ -18,17 +18,36 @@ export const createUser = async (userData: User) => {
     }
 };
 
+export const deleteProject = async (projectId: string, ownerId: string) => {
+    try {
+        const projectRef = doc(db, 'projects', projectId);
+        await deleteDoc(projectRef);
+        console.log(`Project with ID: ${projectId} has been deleted.`);
+
+        const userRef = doc(db, 'users', ownerId);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const updatedProjects = (userData.projects || []).filter((ref: any) => ref.id !== projectId);
+            await setDoc(userRef, { projects: updatedProjects }, { merge: true });
+            console.log(`Project reference removed from user with ID: ${ownerId}.`);
+        }
+    } catch (error) {
+        console.error('Error deleting project:', error);
+        throw error;
+    }
+};
+
 export const createProject = async (projectData: Project) => {
     try {
         const projectRef = doc(collection(db, 'projects'));
         await setDoc(projectRef, {
             name: projectData.name,
             ownerId: projectData.ownerId,
-            description: projectData.description, // Added description field here
+            description: projectData.description,
             createdAt: projectData.createdAt,
             tasks: projectData.tasks,
         });
-        // Add the project reference to the user's projects
         const userRef = doc(db, 'users', projectData.ownerId);
         await setDoc(userRef, {
             projects: [projectRef],
