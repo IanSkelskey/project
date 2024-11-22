@@ -12,6 +12,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import { Assignment, Park, Settings } from '@mui/icons-material';
 import { evergreen, project_manager } from './data/Projects';
+import SettingsPage from './pages/SettingsPage';
 
 
 function App() {
@@ -95,7 +96,7 @@ function App() {
             case '/profile':
                 return <ProfilePage />;
             case '/settings':
-                return <div>Settings</div>;
+                return <SettingsPage />;
             default:
                 return <DashboardPage />;
         }
