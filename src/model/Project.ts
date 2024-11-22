@@ -1,6 +1,6 @@
 // models/Project.ts
 
-import { Task } from "./Task";
+import { Task } from './Task';
 
 export interface Project {
     id: string;
@@ -9,5 +9,4 @@ export interface Project {
     ownerId: string;
     createdAt: Date;
     tasks: Task[]; // We'll include Task objects directly for simplicity
-  }
-  
+}

@@ -14,7 +14,6 @@ import { Assignment, Park, Settings } from '@mui/icons-material';
 import { evergreen, project_manager } from './data/Projects';
 import SettingsPage from './pages/SettingsPage';
 
-
 function App() {
     // Detect dark mode preference
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -70,7 +69,7 @@ function App() {
             segment: 'settings',
             title: 'Settings',
             icon: <Settings />,
-        }
+        },
     ];
 
     // Router implementation

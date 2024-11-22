@@ -11,5 +11,4 @@ export interface Task {
     updatedAt: Date;
     blockingTasks?: string[]; // IDs of tasks that this task is blocking
     blockedByTasks?: string[]; // IDs of tasks that block this task
-  }
-  
+}
