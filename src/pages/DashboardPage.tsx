@@ -16,6 +16,7 @@ import {
   Assignment as AssignmentIcon,
   Build as BuildIcon,
 } from '@mui/icons-material';
+import { LineChart } from '@mui/x-charts/LineChart';
 
 function DashboardPage() {
   // Sample data
@@ -38,9 +39,39 @@ function DashboardPage() {
   ];
 
   const recentActivities = [
-    { id: 1, user: 'Alice', action: 'completed task', task: 'Design Logo', time: '2 hours ago' },
-    { id: 2, user: 'Bob', action: 'commented on task', task: 'Fix Login Bug', time: '5 hours ago' },
-    { id: 3, user: 'Charlie', action: 'updated milestone', task: 'Phase 1 Completion', time: '1 day ago' },
+    {
+      id: 1,
+      user: 'Alice',
+      action: 'completed task',
+      task: 'Design Logo',
+      time: '2 hours ago',
+    },
+    {
+      id: 2,
+      user: 'Bob',
+      action: 'commented on task',
+      task: 'Fix Login Bug',
+      time: '5 hours ago',
+    },
+    {
+      id: 3,
+      user: 'Charlie',
+      action: 'updated milestone',
+      task: 'Phase 1 Completion',
+      time: '1 day ago',
+    },
+  ];
+
+  // Sample data for contributions over time
+  const contributionsData = [
+    { date: new Date('2023-09-01'), contributions: 2 },
+    { date: new Date('2023-09-02'), contributions: 5 },
+    { date: new Date('2023-09-03'), contributions: 3 },
+    { date: new Date('2023-09-04'), contributions: 7 },
+    { date: new Date('2023-09-05'), contributions: 4 },
+    { date: new Date('2023-09-06'), contributions: 6 },
+    { date: new Date('2023-09-07'), contributions: 5 },
+    // Add more data points as needed
   ];
 
   return (
@@ -77,10 +108,11 @@ function DashboardPage() {
             </Typography>
             {milestones.map((milestone) => (
               <div key={milestone.id} style={{ marginBottom: 16 }}>
-                <Typography variant="subtitle1">
-                  {milestone.title}
-                </Typography>
-                <LinearProgress variant="determinate" value={milestone.progress} />
+                <Typography variant="subtitle1">{milestone.title}</Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={milestone.progress}
+                />
               </div>
             ))}
           </Paper>
@@ -95,7 +127,10 @@ function DashboardPage() {
                 {projectStats.map((stat, index) => (
                   <ListItem key={index}>
                     <BuildIcon style={{ marginRight: 16 }} />
-                    <ListItemText primary={stat.label} secondary={stat.value} />
+                    <ListItemText
+                      primary={stat.label}
+                      secondary={stat.value}
+                    />
                   </ListItem>
                 ))}
               </List>
@@ -119,6 +154,37 @@ function DashboardPage() {
                 </ListItem>
               ))}
             </List>
+          </Paper>
+        </Grid>
+
+        {/* Contributions Over Time Chart */}
+        <Grid item xs={12}>
+          <Paper style={{ padding: 16 }}>
+            <Typography variant="h6" gutterBottom>
+              Contributions Over Time
+            </Typography>
+            <div style={{ height: 300 }}>
+              <LineChart
+                dataset={contributionsData}
+                xAxis={[
+                  {
+                    dataKey: 'date',
+                    scaleType: 'time',
+                    valueFormatter: (value) =>
+                      new Date(value).toLocaleDateString(),
+                  },
+                ]}
+                series={[
+                  {
+                    dataKey: 'contributions',
+                    label: 'Contributions',
+                    area: false,
+                  },
+                ]}
+                height={300}
+                margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
+              />
+            </div>
           </Paper>
         </Grid>
       </Grid>
