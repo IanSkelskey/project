@@ -1,17 +1,15 @@
-import { Timestamp, DocumentReference } from 'firebase/firestore';
-import { Project } from './Project';
-import { Status } from './Status';
-import { User } from './User';
+// models/Task.ts
 
 export interface Task {
     id: string;
     title: string;
     description: string;
-    statusId: DocumentReference<Status>;
-    projectId: DocumentReference<Project>;
-    assignedTo: DocumentReference<User>;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
-    blockingTasks?: DocumentReference<Task>[];
-    blockedByTasks?: DocumentReference<Task>[];
-}
+    status: string; // e.g., 'Not Started', 'In Progress', 'Completed'
+    projectId: string;
+    assignedTo: string; // User ID or name
+    createdAt: Date;
+    updatedAt: Date;
+    blockingTasks?: string[]; // IDs of tasks that this task is blocking
+    blockedByTasks?: string[]; // IDs of tasks that block this task
+  }
+  

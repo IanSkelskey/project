@@ -10,7 +10,7 @@ function Toolpad({ children }: ToolpadProps) {
   return (
     <DashboardLayout>
       {/* Main content area */}
-      <div style={{ padding: '16px' }}>{children}</div>
+      <div style={{ height: '100%', overflow: 'auto' }}>{children}</div>
     </DashboardLayout>
   );
 }

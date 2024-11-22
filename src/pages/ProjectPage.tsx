@@ -1,16 +1,20 @@
 // src/pages/ReportsPage.tsx
-import React from 'react';
-
+import ProjectTable from '../components/ProjectTable';
+import TaskRow from '../components/TaskRow';
+import { Project } from '../model/Project';
 interface ProjectPageProps {
-  title: string;
+  project: Project;
 }
 
-function ProjectPage({ title }: ProjectPageProps) {
+function ProjectPage({ project }: ProjectPageProps) {
   return (
-    <div>
-      <h1>{title}</h1>
-      {/* Add your reports content here */}
-    </div>
+      <ProjectTable project={project}>
+        {
+          project.tasks.map(task => (
+            <TaskRow key={task.id} task={task} />
+          ))
+        }
+      </ProjectTable>
   );
 }
 
