@@ -1,6 +1,5 @@
 // src/pages/ReportsPage.tsx
-import ProjectTable from '../components/ProjectTable';
-import TaskRow from '../components/TaskRow';
+import ProjectDataGrid from '../components/ProjectDataGrid';
 import { Project } from '../model/Project';
 interface ProjectPageProps {
     project: Project;
@@ -8,11 +7,9 @@ interface ProjectPageProps {
 
 function ProjectPage({ project }: ProjectPageProps) {
     return (
-        <ProjectTable project={project}>
-            {project.tasks.map((task) => (
-                <TaskRow key={task.id} task={task} />
-            ))}
-        </ProjectTable>
+        <div style={{ height: '93vh', width: '100%' }}>
+            <ProjectDataGrid project={project} />
+        </div>
     );
 }
 
