@@ -34,6 +34,8 @@ import {
 	Event,
 	Person,
 } from '@mui/icons-material';
+import PriorityChip from '../atoms/PriorityChip';
+import StatusChip from '../atoms/StatusChip';
 
 interface ProjectDataGridProps {
 	project: Project;
@@ -46,24 +48,7 @@ const ProjectDataGrid: React.FC<ProjectDataGridProps> = ({ project }) => {
 			field: 'priority',
 			headerName: 'Priority',
 			flex: 1,
-			renderCell: (params) => {
-				let color: 'default' | 'primary' | 'success' | 'warning' | 'error' =
-					'default';
-				switch (params.value) {
-					case 'High':
-						color = 'error';
-						break;
-					case 'Medium':
-						color = 'warning';
-						break;
-					case 'Low':
-						color = 'success';
-						break;
-					default:
-						color = 'default';
-				}
-				return <Chip label={params.value} color={color} />;
-			},
+			renderCell: (params) => { return <PriorityChip priority={params.value as string} />; }
 		},
 		{
 			field: 'dueDate',
@@ -79,47 +64,7 @@ const ProjectDataGrid: React.FC<ProjectDataGridProps> = ({ project }) => {
 			headerName: 'Status',
 			flex: 1,
 			renderCell: (params) => {
-				let color: 'default' | 'primary' | 'success' | 'warning' | 'error' =
-					'default';
-				let label = params.value;
-				let icon = null;
-				switch (params.value) {
-					case 'New':
-						color = 'default';
-						icon = <AutoAwesome />;
-						break;
-					case 'Completed':
-						color = 'success';
-						icon = <CheckCircle />;
-						break;
-					case 'In Progress':
-						color = 'primary';
-						icon = <Autorenew />;
-						break;
-					case 'Pending':
-						color = 'warning';
-						icon = <HourglassEmpty />;
-						break;
-					case 'Overdue':
-						color = 'error';
-						icon = <Error />;
-						break;
-					default:
-						color = 'default';
-				}
-				return (
-					<Chip
-						label={
-							params.colDef.computedWidth &&
-								params.colDef.computedWidth < 120
-								? ''
-								: label
-						}
-						color={color}
-						icon={icon || undefined}
-						sx={{ width: '100%' }}
-					/>
-				);
+				return <StatusChip status={params.value as string} />;
 			},
 		},
 		{ field: 'assignedTo', headerName: 'Assigned To', flex: 1 },
