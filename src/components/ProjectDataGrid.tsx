@@ -4,7 +4,6 @@ import React from 'react';
 import {
 	DataGridPro,
 	GridColDef,
-	GridValueFormatter,
 	GridRowParams,
 } from '@mui/x-data-grid-pro';
 import { Project } from '../model/Project';
