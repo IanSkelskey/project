@@ -10,7 +10,6 @@ import { Project } from '../model/Project';
 import { Task } from '../model/Task';
 import {
 	Box,
-	Chip,
 	Typography,
 	Card,
 	CardContent,
@@ -23,11 +22,6 @@ import {
 	ListItemText,
 } from '@mui/material';
 import {
-	AutoAwesome,
-	Autorenew,
-	Error,
-	HourglassEmpty,
-	CheckCircle,
 	Description,
 	Comment,
 	PriorityHigh,
