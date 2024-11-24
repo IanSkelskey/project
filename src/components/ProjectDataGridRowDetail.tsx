@@ -5,11 +5,11 @@ import { Avatar, Box, Card, CardContent, Divider, List, ListItem, ListItemAvatar
 import Grid from "@mui/material/Grid2";
 import { Comment, Description, Event, Person, PriorityHigh } from "@mui/icons-material";
 
-interface ProjectDataGridRowProps {
+interface ProjectDataGridRowDetailProps {
     params: GridRowParams;
 }
 
-const ProjectDataGridRow: React.FC<ProjectDataGridRowProps> = ({ params }) => {
+const ProjectDataGridRowDetail: React.FC<ProjectDataGridRowDetailProps> = ({ params }) => {
     const task = params.row as Task;
 
     return (
@@ -95,4 +95,4 @@ const ProjectDataGridRow: React.FC<ProjectDataGridRowProps> = ({ params }) => {
     );
 };
 
-export default ProjectDataGridRow;
+export default ProjectDataGridRowDetail;

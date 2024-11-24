@@ -8,7 +8,7 @@ import {
 import { Project } from '../model/Project';
 import PriorityChip from '../atoms/PriorityChip';
 import StatusChip from '../atoms/StatusChip';
-import ProjectDataGridRow from './ProjectDataGridRow';
+import ProjectDataGridRow from './ProjectDataGridRowDetail';
 
 interface ProjectDataGridProps {
 	project: Project;
@@ -44,19 +44,17 @@ const ProjectDataGrid: React.FC<ProjectDataGridProps> = ({ project }) => {
 	];
 
 	return (
-		<div style={{ height: '100%', width: '100%' }}>
-			<DataGridPro
-				rows={project.tasks}
-				columns={columns}
-				getRowId={(row) => row.id}
-				initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-				pagination
-				pageSizeOptions={[10, 20, 30]}
-				disableRowSelectionOnClick
-				getDetailPanelContent={(params) => <ProjectDataGridRow params={params} />}
-				getDetailPanelHeight={() => 'auto'}
-			/>
-		</div>
+		<DataGridPro
+			rows={project.tasks}
+			columns={columns}
+			getRowId={(row) => row.id}
+			initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+			pagination
+			pageSizeOptions={[10, 20, 30]}
+			disableRowSelectionOnClick
+			getDetailPanelContent={(params) => <ProjectDataGridRow params={params} />}
+			getDetailPanelHeight={() => 'auto'}
+		/>
 	);
 };
 
