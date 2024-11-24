@@ -1,5 +1,5 @@
-import { Timestamp, DocumentReference } from 'firebase/firestore';
-import { User } from './User';
+// models/Project.ts
+
 import { Task } from './Task';
 
 export interface Project {
@@ -7,6 +7,6 @@ export interface Project {
     name: string;
     description: string;
     ownerId: string;
-    createdAt: Timestamp;
-    tasks: DocumentReference<Task>[];
+    createdAt: Date;
+    tasks: Task[]; // We'll include Task objects directly for simplicity
 }
